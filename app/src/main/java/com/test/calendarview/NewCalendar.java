@@ -137,6 +137,7 @@ public class NewCalendar extends LinearLayout {
 
             if (date.getDate() == now.getDate() && date.getMonth() == now.getMonth() && date.getYear() == now.getYear()) {
                 ((TextView) convertView).setTextColor(Color.parseColor("#ff0000"));
+                ((Calendar_day_textView) convertView).isToday = true;
 
             }
             return convertView;
