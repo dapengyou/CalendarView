@@ -1,6 +1,7 @@
 package com.test.calendarview;
 
 import android.content.Context;
+import android.content.res.TypedArray;
 import android.graphics.Color;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
@@ -9,6 +10,7 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.Adapter;
+import android.widget.AdapterView;
 import android.widget.ArrayAdapter;
 import android.widget.GridView;
 import android.widget.ImageView;
@@ -33,22 +35,37 @@ public class NewCalendar extends LinearLayout {
 
     private Calendar curDate = Calendar.getInstance();
 
+    private String displayFormat;
+
+    public NewCalendarListener mListener;
+
     public NewCalendar(Context context) {
         super(context);
     }
 
     public NewCalendar(Context context, @Nullable AttributeSet attrs) {
         super(context, attrs);
-        initControl(context);
+        initControl(context, attrs);
     }
 
     public NewCalendar(Context context, @Nullable AttributeSet attrs, int defStyleAttr) {
         super(context, attrs, defStyleAttr);
     }
 
-    private void initControl(Context context) {
+    private void initControl(Context context, AttributeSet attrs) {
         bindControl(context);
         bindControlEvent();
+
+
+        TypedArray typedArray = getContext().obtainStyledAttributes(attrs, R.styleable.NewCalendar);
+        String format = typedArray.getString(R.styleable.NewCalendar_dateFormat);
+        displayFormat = format;
+        if (displayFormat == null) {
+            displayFormat = "MMM yyyy";
+        }
+
+        typedArray.recycle();
+
         renderCantrol();
     }
 
@@ -83,7 +100,7 @@ public class NewCalendar extends LinearLayout {
      * 渲染控件
      */
     private void renderCantrol() {
-        SimpleDateFormat sdf = new SimpleDateFormat("MMM yyyy");//格式化日期
+        SimpleDateFormat sdf = new SimpleDateFormat(displayFormat);//格式化日期
         mTvDate.setText(sdf.format(curDate.getTime()));
 
         ArrayList<Date> list = new ArrayList<>();
@@ -102,6 +119,18 @@ public class NewCalendar extends LinearLayout {
             calendar.add(Calendar.DAY_OF_MONTH, 1);
         }
         mGvGrid.setAdapter(new CalendarAdapter(getContext(), list));
+        mGvGrid.setOnItemLongClickListener(new AdapterView.OnItemLongClickListener() {
+            @Override
+            public boolean onItemLongClick(AdapterView<?> adapterView, View view, int i, long l) {
+                //表示对点击状态无响应
+                if (mListener == null) {
+                    return false;
+                } else {
+                    mListener.onItemLongPress((Date) adapterView.getItemAtPosition(i));
+                    return true;
+                }
+            }
+        });
     }
 
     private class CalendarAdapter extends ArrayAdapter<Date> {
@@ -142,5 +171,9 @@ public class NewCalendar extends LinearLayout {
             }
             return convertView;
         }
+    }
+
+    public interface NewCalendarListener {
+        void onItemLongPress(Date day);
     }
 }

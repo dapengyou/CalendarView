@@ -6,7 +6,11 @@
     android:layout_height="match_parent"
     tools:context="com.test.calendarview.MainActivity">
 
-    <com.test.calendarview.NewCalendar
+    <com.test.calendarview.NewCalendar xmlns:NewCalendarNs="http://schemas.android.com/apk/res/com.test.calendarview"
         android:layout_width="match_parent"
-        android:layout_height="match_parent"></com.test.calendarview.NewCalendar>
+        android:layout_height="match_parent"
+        android:id="@+id/newCalendar"
+        NewCalendarNs:dateFormat="MMM yyyy">
+
+    </com.test.calendarview.NewCalendar>
 </LinearLayout>
